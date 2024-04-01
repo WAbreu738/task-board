@@ -28,17 +28,17 @@ function createTaskCard(task) {
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
 
-    // Loop through the task list
+    // Loops through the task list
     taskList.forEach(function (task) {
         const taskCard = createTaskCard(task);
         $("#to-do").append(taskCard);
-    });
+    })
 
     $(".task-card").draggable({
         containment: ".container",
-        revert: "invalid",
+        revert: true,
         stack: ".task-card"
-    });
+    })
 }
 
 
@@ -58,23 +58,23 @@ function handleAddTask(event) {
         title: title,
         description: description,
         dueDate: dueDate
-    };
+    }
 
     // Add the new task to the task list
-    taskList.push(newTask);
+    taskList.push(newTask)
 
     // Update localStorage
     localStorage.setItem("tasks", JSON.stringify(taskList))
     localStorage.setItem("nextId", JSON.stringify(nextId))
 
     // Render the updated task list by creating the task card
-    const taskCard = createTaskCard(newTask);
+    const taskCard = createTaskCard(newTask)
     $("#to-do").append(taskCard) 
 
     // Clear the forms
     $("#title").val("")
     $("#description").val("")
-    $("#date").val("")
+    $("#dueDate").val("")
 }
 
 
@@ -101,37 +101,36 @@ function handleDeleteTask() {
 
 
 // Todo: create a function to handle dropping a task into a new status lane
-function handleDrop(event, ui) {
-    const droppedTask = ui.draggable; // Get the dragged task card element
-    const targetLane = $(this) // Get the droppable lane where the task is dropped
-
-    // Append the dropped taskcard to the target lane
-    droppedTask.appendTo(targetLane)
-
-    // Adjust the dropped taskcard's position
-    droppedTask.css({ top: 0, left: 0 })
-
-    const newStatus = targetLane.attr("id")
-    const taskId = droppedTask.data("id")
-
-    // Update the task status in the task list
-    const updatedTaskList = taskList.map(task => {
-        if (task.id === taskId) {
-            task.status = newStatus;
-        }
-        return task;
-    });
-
-    // Update the task list and nextId in localStorage
-    localStorage.setItem("tasks", JSON.stringify(updatedTaskList));
-}
-
-// Function to make the lanes droppable
 function makeLanesDroppable() {
     $(".lane").droppable({
         accept: ".task-card",
         tolerance: "pointer",
-        drop: handleDrop
+        drop: function(eventObj, ui) {
+            const targetLane = $(this); // Get the droppable lane where the task is dropped
+            const droppedTask = ui.draggable; // Get the dragged task card element
+
+            // Adjust the dropped task card's position
+            droppedTask.css({ 
+                top: 0, 
+                left: 0 });
+
+            // Append the dropped task card to the target lane
+            droppedTask.appendTo(targetLane);
+
+            // Get the task ID from the dropped task card
+            const taskId = droppedTask.data("id");
+
+            // Update the task status in the task list
+            const updatedTaskList = taskList.map(task => {
+                if (task.id === taskId) {
+                    task.status = targetLane.attr("id");
+                }
+                return task;
+            });
+
+            // Update the task list in localStorage
+            localStorage.setItem("tasks", JSON.stringify(updatedTaskList));
+        }
     });
 }
 
@@ -147,8 +146,7 @@ function checkDate() {
 
         // Select the task card with corresponding data-id and check the due date
         const taskCard = $(`.task-card[data-id="${task.id}"]`);
-
-        // Check if the due date is today
+        
         if (taskDueDate.isSame(today, 'day')) {
             taskCard.addClass("today")
         }
@@ -164,10 +162,13 @@ function checkDate() {
 }
 
 $(document).ready(function () {
+
     $("#submitBtn").click(function () {
         console.log("submit button clicked")
         $("formModal").modal("hide")
     })
+    
+    $(".btn-primary").click(handleAddTask);
 
     renderTaskList()
 
@@ -176,6 +177,6 @@ $(document).ready(function () {
     makeLanesDroppable()
     
     checkDate()
-    $(".btn-primary").click(checkDate)
 
+    $(".btn-primary").click(checkDate)
 })
