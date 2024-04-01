@@ -169,6 +169,8 @@ $(document).ready(function () {
         $("formModal").modal("hide")
     })
 
+     $(".btn-primary").click(handleAddTask)
+    
     renderTaskList()
 
     $(document).on('click', '.delete-btn', handleDeleteTask)
@@ -176,6 +178,7 @@ $(document).ready(function () {
     makeLanesDroppable()
     
     checkDate()
+    
     $(".btn-primary").click(checkDate)
 
 })
