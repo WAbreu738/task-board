@@ -80,18 +80,13 @@ function handleAddTask(event) {
 
 // Todo: create a function to handle deleting a task
 function handleDeleteTask() {
-    // Find the task card associated with the clicked delete button
     var taskCard = $(this).closest('.task-card')
-
-    // Retrieve the task ID from the data-id attribute of the task card
     var taskId = taskCard.data('id')
 
-    // Remove the task from the task list
     taskList = taskList.filter(function (task) {
         return task.id !== taskId;
     });
 
-    // Update localStorage
     localStorage.setItem("tasks", JSON.stringify(taskList))
 
     // Remove the task card from the DOM
@@ -106,21 +101,18 @@ function makeLanesDroppable() {
         accept: ".task-card",
         tolerance: "pointer",
         drop: function(eventObj, ui) {
-            const targetLane = $(this); // Get the droppable lane where the task is dropped
-            const droppedTask = ui.draggable; // Get the dragged task card element
+            const targetLane = $(this); 
+            const droppedTask = ui.draggable; 
 
-            // Adjust the dropped task card's position
+           
             droppedTask.css({ 
                 top: 0, 
                 left: 0 });
 
-            // Append the dropped task card to the target lane
             droppedTask.appendTo(targetLane);
 
-            // Get the task ID from the dropped task card
             const taskId = droppedTask.data("id");
 
-            // Update the task status in the task list
             const updatedTaskList = taskList.map(task => {
                 if (task.id === taskId) {
                     task.status = targetLane.attr("id");
@@ -128,7 +120,6 @@ function makeLanesDroppable() {
                 return task;
             });
 
-            // Update the task list in localStorage
             localStorage.setItem("tasks", JSON.stringify(updatedTaskList));
         }
     });
@@ -142,19 +133,16 @@ function checkDate() {
 
     // Loop through each task in the task list
     taskList.forEach(function (task) {
-        const taskDueDate = dayjs(task.dueDate);
-
-        // Select the task card with corresponding data-id and check the due date
-        const taskCard = $(`.task-card[data-id="${task.id}"]`);
+        const taskDueDate = dayjs(task.dueDate)
+        
+        const taskCard = $(`.task-card[data-id="${task.id}"]`)
         
         if (taskDueDate.isSame(today, 'day')) {
             taskCard.addClass("today")
         }
-        // Check if the due date is in the past
         else if (taskDueDate.isBefore(today, 'day')) {
             taskCard.addClass("past").removeClass("today")
         }
-        // Clear classes for future dates
         else {
             taskCard.removeClass("today past")
         }
